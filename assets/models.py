@@ -24,7 +24,7 @@ class Asset(models.Model):
     asset_type = models.CharField(choices=asset_type_choice, max_length=64, default='server', verbose_name='资产类型')
     name = models.CharField(max_length=64, unique=True, verbose_name='资产名称')
     sn = models.CharField(max_length=128, unique=True, verbose_name='资产序列号')
-    business_unit = models.ForeignKey('Business_unit', null=True, blank=True, verbose_name='所属业务线',
+    business_unit = models.ForeignKey('BusinessUnit', null=True, blank=True, verbose_name='所属业务线',
                                       on_delete=models.SET_NULL)
     status = models.SmallIntegerField(choices=asset_status, default=0, verbose_name='设备状态')
     manufacturer = models.ForeignKey('Manufacturer', null=True, blank=True, verbose_name='制造商',
@@ -176,4 +176,50 @@ class Software(models.Model):
     class Meta:
         verbose_name = '软件/系统'
         verbose_name_plural = '软件/系统'
+
+
+class IDC(models.Model):
+    """机房"""
+
+    name = models.CharField(max_length=64, unique=True, verbose_name='机房名称')
+    memo = models.CharField(max_length=128, null=True, blank=True, verbose_name='备注')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '机房'
+        verbose_name_plural = '机房'
+
+
+class Manufacturer(models.Model):
+    """厂商"""
+
+    name = models.CharField('厂商名称', max_length=64, unique=True)
+    telephone = models.CharField('支持电话', max_length=30, null=True, blank=True)
+    memo = models.CharField('备注', max_length=128, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '厂商'
+        verbose_name_plural = '厂商'
+
+
+class BusinessUnit(models.Model):
+    """业务线"""
+
+    parent_unit = models.ForeignKey('self', null=True, blank=True, related_name='parent_level',
+                                    on_delete=models.SET_NULL)
+    name = models.CharField('业务线', max_length=64, unique=True)
+    memo = models.CharField('备注', max_length=64, null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = '业务线'
+        verbose_name_plural = '业务线'
+
 
